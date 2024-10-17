@@ -165,24 +165,47 @@ worksheet.write('G1', 'Значение курса основного клири
 worksheet.write('H1', 'Изменение')
 
 
+
 row_start = 1 # Запись данных, ниже шапки
 for i, entry in enumerate(data):
     worksheet.write(row_start + i, 0, entry[0])
-    worksheet.write(row_start + i, 1,
-                    "₽" + f"{float(entry[1]):.2f}" + " " + entry[2])
-    worksheet.write(row_start + i, 2,
-                    "₽" + f"{float(entry[3]):.2f}" + " " + entry[4])
+
+    try:
+        value = float(entry[1])
+        worksheet.write(row_start + i, 1, f"{value:.2f}" + " " + "₽" + " " + entry[2])
+    except (ValueError, TypeError):
+        worksheet.write(row_start + i, 1, "-" + " " + entry[2])
+
+    try:
+        value = float(entry[3])
+        worksheet.write(row_start + i, 2, f"{value:.2f}" + " " + "₽" + " " + entry[4])
+    except (ValueError, TypeError):
+        worksheet.write(row_start + i, 2, "-" + " " + entry[4])
+
     worksheet.write(row_start + i, 3, '')
+
     worksheet.write(row_start + i, 4, entry[6])
-    worksheet.write(row_start + i, 5,
-                    "₽" + f"{float(entry[7]):.2f}" + " " + entry[8])
-    worksheet.write(row_start + i, 6,
-                    "₽" + f"{float(entry[9]):.2f}" + " " + entry[10])
+
+    try:
+        value = float(entry[7])
+        worksheet.write(row_start + i, 5, f"{value:.2f}" + " " + "₽" + " " + entry[8])
+    except (ValueError, TypeError):
+        worksheet.write(row_start + i, 5, "-" + " " + entry[8])
+
+    try:
+        value = float(entry[9])
+        worksheet.write(row_start + i, 6, f"{value:.2f}" + " " + "₽" + " " + entry[10])
+    except (ValueError, TypeError):
+        worksheet.write(row_start + i, 6, "-" + " " + entry[10])
 
     # Добавляем значение в столбец H (индекс 7)
-    if entry[3] and entry[9]:
-        value_h = float(entry[9]) / float(entry[3])
-        worksheet.write(row_start + i, 7, value_h, rez_format)
+    if entry[9] and entry[3]:
+        try:
+            value = float(entry[9]) / float(entry[3])
+            worksheet.write(row_start + i, 7, value, rez_format)
+        except (ValueError, TypeError):
+            value = "-"
+            worksheet.write(row_start + i, 7, value)
     else:
         worksheet.write(row_start + i, 7, '-')
 
@@ -190,7 +213,7 @@ for i, entry in enumerate(data):
 Задание противоречиво в части разделения столбцов, если разделить столбцы клиринга на значение и время, 
 то столбец 'Изменение' будет дальше H. Принял решение сохранить 'Изменение' в столбце H в соответствии 
 с условием, так как это может быть использовано для последующей интеграции данных с другими системами.
-Условие разделения реализовал в столбцах с клирингом, добавив к значениям время через пробел.
+Условие разделения реализовал в столбцах с клирингом - добавил к значениям время через пробел.
 """
 
 worksheet.autofit()
